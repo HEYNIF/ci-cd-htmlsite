@@ -1,4 +1,4 @@
-name: Deploy static content to Pages
+name: Deploy static site to Pages
 
 on:
   push:
@@ -15,29 +15,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      artifact_name: ${{ steps.upload.outputs.artifact_name }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Upload static site
-        id: upload
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-          name: github-pages
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v3
